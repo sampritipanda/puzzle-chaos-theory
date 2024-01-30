@@ -119,7 +119,20 @@ pub fn main() {
 
     /* Implement your attack here, to find the index of the encrypted message */
 
-    unimplemented!();
+    for (i, msg) in messages.iter().enumerate() {
+        let shared = blob.c.1 - msg.0;
+
+        // G1 * x * y * G2
+        // G2 * x * hash_c * G1 * y
+        // s == hash_c * x * G2
+
+        let lhs = { Bls12_381::pairing(shared, blob.c.hash_to_curve()) };
+        let rhs = { Bls12_381::pairing(blob.rec_pk, blob.s) };
+
+        if lhs == rhs {
+            println!("Msg {i} is correct");
+        }
+    }
 
     /* End of attack */
 }
